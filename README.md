@@ -30,7 +30,7 @@ Karena ukuran model sangat besar, file `.keras` diabaikan dari git. Anda harus m
 
 > [!IMPORTANT]
 > Silakan unduh file model `.keras` di atas melalui link Google Drive berikut:
-> 🔗 **[MASUKKAN LINK DOWNLOAD GOOGLE DRIVE ANDA DISINI]**
+> 🔗 **[Google Drive - Download Models](https://drive.google.com/drive/folders/1xAymMipPblPGRY7SdmWKwfdzKPzq6Z5I?usp=sharing)**
 
 ---
 
