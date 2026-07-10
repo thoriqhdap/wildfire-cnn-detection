@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildfire CNN Detection Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar: Dataset Explorer -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-fire-flame-curved logo-icon"></i>
+                <h2>Wildfire CNN</h2>
+                <span class="badge">Dataset Explorer</span>
+            </div>
+            
+            <div class="dataset-info">
+                <p><i class="fa-solid fa-images"></i> <strong>61 Images</strong> in dataset</p>
+                <p class="subtext">Class: <code>Wild_Fire</code></p>
+            </div>
+
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="dataset-search" placeholder="Search image name...">
+            </div>
+
+            <div class="image-gallery-container">
+                <div class="image-gallery" id="dataset-gallery">
+                    <!-- Dynamic thumbs will go here -->
+                    <div class="loading-spinner">
+                        <i class="fa-solid fa-circle-notch fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-info">
+                    <h1>Wildfire Detection & Scenario Comparison</h1>
+                    <p class="subtitle">Evaluate and compare Deep Learning CNNs trained under different learning rates and epochs.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="btn-run-eval">
+                        <i class="fa-solid fa-chart-line"></i> Run Full Evaluation
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                <!-- Left: Upload & Active Image -->
+                <section class="card upload-section">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-image-portrait"></i> Input Selection</h3>
+                        <span class="active-file-badge" id="active-filename">No File Selected</span>
+                    </div>
+                    
+                    <div class="drop-zone" id="drop-zone">
+                        <div class="drop-zone-content">
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            <p class="drop-text-main">Drag & Drop Image Here</p>
+                            <p class="drop-text-sub">or click to browse local files (JPG, PNG)</p>
+                            <input type="file" id="file-input" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="preview-container" id="preview-container" style="display: none;">
+                        <img id="image-preview" src="" alt="Selected image preview">
+                        <div class="preview-overlay">
+                            <button class="btn btn-danger btn-sm" id="btn-clear-image">
+                                <i class="fa-solid fa-trash"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Right: Comparison Metrics -->
+                <section class="card results-section">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-sliders"></i> Scenario Comparison</h3>
+                        <div class="status-indicator">
+                            <span class="status-dot green"></span> Running inference
+                        </div>
+                    </div>
+
+                    <div class="comparison-grid" id="comparison-grid">
+                        <!-- Card 1: Scenario 1 -->
+                        <div class="scenario-card" id="card-S1_LR_Besar">
+                            <div class="scenario-header">
+                                <h4>S1: Large LR</h4>
+                                <span class="lr-badge lr-large">LR: 0.01</span>
+                            </div>
+                            <div class="gauge-container">
+                                <svg class="gauge-svg" viewBox="0 0 100 100">
+                                    <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                                    <circle class="gauge-progress s1-progress" cx="50" cy="50" r="40"></circle>
+                                </svg>
+                                <div class="gauge-text" id="val-S1-pct">0%</div>
+                            </div>
+                            <div class="prediction-status safe" id="val-S1-class">Ready</div>
+                            <div class="scenario-footer">
+                                <span><i class="fa-regular fa-clock"></i> Latency:</span>
+                                <strong id="val-S1-latency">-</strong>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Scenario 2 -->
+                        <div class="scenario-card" id="card-S2_LR_Kecil">
+                            <div class="scenario-header">
+                                <h4>S2: Small LR</h4>
+                                <span class="lr-badge lr-small">LR: 0.0001</span>
+                            </div>
+                            <div class="gauge-container">
+                                <svg class="gauge-svg" viewBox="0 0 100 100">
+                                    <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                                    <circle class="gauge-progress s2-progress" cx="50" cy="50" r="40"></circle>
+                                </svg>
+                                <div class="gauge-text" id="val-S2-pct">0%</div>
+                            </div>
+                            <div class="prediction-status safe" id="val-S2-class">Ready</div>
+                            <div class="scenario-footer">
+                                <span><i class="fa-regular fa-clock"></i> Latency:</span>
+                                <strong id="val-S2-latency">-</strong>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Scenario 5 -->
+                        <div class="scenario-card highlight" id="card-S5_Epoch_Tinggi">
+                            <div class="scenario-header">
+                                <h4>S5: High Epoch</h4>
+                                <span class="lr-badge lr-normal">LR: 0.001</span>
+                            </div>
+                            <div class="gauge-container">
+                                <svg class="gauge-svg" viewBox="0 0 100 100">
+                                    <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                                    <circle class="gauge-progress s5-progress" cx="50" cy="50" r="40"></circle>
+                                </svg>
+                                <div class="gauge-text" id="val-S5-pct">0%</div>
+                            </div>
+                            <div class="prediction-status safe" id="val-S5-class">Ready</div>
+                            <div class="scenario-footer">
+                                <span><i class="fa-regular fa-clock"></i> Latency:</span>
+                                <strong id="val-S5-latency">-</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Bottom: Static Reports & Evaluation Outputs -->
+            <section class="card reports-section">
+                <div class="card-header">
+                    <h3><i class="fa-solid fa-chart-bar"></i> Evaluation Reports</h3>
+                    <span class="report-badge">Matplotlib Outputs</span>
+                </div>
+                
+                <div class="tabs-header">
+                    <button class="tab-btn active" data-target="tab-stats">Performance Summary</button>
+                    <button class="tab-btn" data-target="tab-grid">Sample Grid Predictions</button>
+                </div>
+
+                <div class="tab-content" id="tab-stats">
+                    <div class="report-visual-wrapper">
+                        <img src="/static/evaluation_results.png" alt="Model comparison chart (Run evaluation if missing)" id="img-results" onerror="this.src='https://placehold.co/800x400/1e293b/ffffff?text=Run+Full+Evaluation+to+Generate+Chart'">
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-grid" style="display: none;">
+                    <div class="report-visual-wrapper">
+                        <img src="/static/predictions_grid.png" alt="Predictions sample grid (Run evaluation if missing)" id="img-grid" onerror="this.src='https://placehold.co/800x600/1e293b/ffffff?text=Run+Full+Evaluation+to+Generate+Grid'">
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for script loading / logs -->
+    <div class="modal" id="eval-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Evaluating Model Scenarios...</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="eval-loader">
+                    <i class="fa-solid fa-spinner fa-spin fa-3x"></i>
+                    <p>Running `evaluate.py` script. This analyzes the models against all 61 dataset images and generates comparative diagrams.</p>
+                </div>
+                <pre class="eval-logs" id="eval-logs">Waiting for script execution logs...</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Javascript -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
